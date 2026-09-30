@@ -8,6 +8,7 @@ interface Props {
   warnings: string[];
   exportReport: string[];
   onToggle: (id: string, enabled: boolean) => void;
+  onToggleMany: (ids: string[], enabled: boolean) => void;
   onReload: () => void;
   onExport: () => void;
 }
@@ -25,6 +26,7 @@ export default function RulesPanel({
   warnings,
   exportReport,
   onToggle,
+  onToggleMany,
   onReload,
   onExport,
 }: Props) {
@@ -65,7 +67,23 @@ export default function RulesPanel({
       )}
       {groups.map(([category, rs]) => (
         <div className="rules-group" key={category}>
-          <div className="rules-group-title">{category}</div>
+          <div className="rules-group-title">
+            <span>{category}</span>
+            <span className="rules-group-btns">
+              <button
+                className="btn btn-mini"
+                onClick={() => onToggleMany(rs.map((r) => r.id), true)}
+              >
+                全选
+              </button>
+              <button
+                className="btn btn-mini"
+                onClick={() => onToggleMany(rs.map((r) => r.id), false)}
+              >
+                全不选
+              </button>
+            </span>
+          </div>
           {rs.map((r) => {
             const risk = RISK_LABEL[r.risk] ?? { text: r.risk, cls: "risk-low" };
             return (

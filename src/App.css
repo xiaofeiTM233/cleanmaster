@@ -190,6 +190,36 @@ body {
   flex-direction: column;
 }
 
+/* ---------- 规则子分组（同类规则一键勾选） ---------- */
+.rule-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.rule-subheader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 24px;
+  background: #fafbfe;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.rule-subheader:hover {
+  background: var(--accent-weak);
+}
+
+.rule-subname {
+  font-weight: 600;
+}
+
+.rule-submeta {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
 .item-row {
   display: flex;
   align-items: center;
@@ -336,6 +366,20 @@ body {
 .rules-group-title {
   font-weight: 700;
   margin: 6px 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rules-group-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-mini {
+  padding: 2px 10px;
+  font-size: 12px;
+  border-radius: 5px;
 }
 
 .rule-row {

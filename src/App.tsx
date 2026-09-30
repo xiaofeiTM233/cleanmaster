@@ -163,9 +163,15 @@ function App() {
   }
 
   async function handleToggleRule(id: string, enabled: boolean) {
+    await handleToggleMany([id], enabled);
+  }
+
+  async function handleToggleMany(ids: string[], enabled: boolean) {
     const next = new Set(disabled);
-    if (enabled) next.delete(id);
-    else next.add(id);
+    for (const id of ids) {
+      if (enabled) next.delete(id);
+      else next.add(id);
+    }
     setDisabled(next);
     try {
       await api.settingsSet({ disabledRules: [...next] });
@@ -221,6 +227,7 @@ function App() {
           warnings={payload.warnings}
           exportReport={exportReport}
           onToggle={handleToggleRule}
+          onToggleMany={handleToggleMany}
           onReload={handleReloadRules}
           onExport={handleExportRules}
         />
