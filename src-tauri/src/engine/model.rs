@@ -14,6 +14,9 @@ fn default_schema() -> u32 {
 fn default_mode() -> Mode {
     Mode::Whole
 }
+fn default_suspected() -> String {
+    "suspected".to_string()
+}
 
 /// 删除模式
 /// - `whole`:    整个目录强制删除（包管理器缓存 / 更新缓存）
@@ -84,6 +87,14 @@ pub enum Target {
         /// 文件名以任意后缀结尾即命中（如 .nupkg）
         #[serde(default)]
         signature_file_ends_with: Vec<String>,
+        /// 多版本目录模式：按目录名中的版本号排序，仅保留最新的 N 个（0 = 不限制）。
+        /// 无法从目录名解析出版本号（形如 x.y）的目录将被保守跳过，绝不删除。
+        #[serde(default)]
+        keep_latest: u32,
+        /// 无特征命中时条目的状态标记（默认 suspected；对目录名精确匹配的
+        /// 缓存子目录可设为 normal 以便默认勾选）
+        #[serde(default = "default_suspected")]
+        unconfirmed_status: String,
         #[serde(default = "default_mode")]
         mode: Mode,
     },

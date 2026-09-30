@@ -100,6 +100,8 @@ pub fn discover(rules: &[Rule], with_sizes: bool) -> Discovery {
                     signature_files,
                     signature_dirs,
                     signature_file_ends_with,
+                    keep_latest,
+                    unconfirmed_status,
                     mode,
                 } => {
                     let re = match RegexBuilder::new(regex)
@@ -119,6 +121,8 @@ pub fn discover(rules: &[Rule], with_sizes: bool) -> Discovery {
                         let Ok(rd) = fs::read_dir(&root) else {
                             continue;
                         };
+                        // 先收集当前 root 下所有命中项，keep_latest 需要整体排序
+                        let mut matched: Vec<(PathBuf, Vec<String>)> = Vec::new();
                         for entry in rd.flatten() {
                             let Ok(ft) = entry.file_type() else {
                                 continue;
@@ -137,7 +141,16 @@ pub fn discover(rules: &[Rule], with_sizes: bool) -> Discovery {
                                 signature_dirs,
                                 signature_file_ends_with,
                             );
-                            let status = if sig.is_empty() { "suspected" } else { "confirmed" };
+                            matched.push((full, sig));
+                        }
+                        let selected =
+                            apply_keep_latest(&mut matched, *keep_latest, &mut warnings);
+                        for (full, sig) in selected {
+                            let status = if sig.is_empty() {
+                                unconfirmed_status.as_str()
+                            } else {
+                                "confirmed"
+                            };
                             try_push(
                                 &mut items, &mut seen, &mut warnings, full, rule, *mode, status,
                                 sig,
@@ -182,6 +195,77 @@ pub fn discover(rules: &[Rule], with_sizes: bool) -> Discovery {
     }
 
     Discovery { items, warnings }
+}
+
+/// keep_latest 语义：按目录名中的版本号排序，仅保留最新的 `n` 个（n=0 时全部保留）。
+/// 无法解析出版本号的目录被保守丢弃（不进入清理候选），避免误删命名不规范的在用目录。
+fn apply_keep_latest(
+    matched: &mut Vec<(PathBuf, Vec<String>)>,
+    n: u32,
+    warnings: &mut Vec<String>,
+) -> Vec<(PathBuf, Vec<String>)> {
+    if n == 0 {
+        return matched.clone();
+    }
+    let mut keyed: Vec<(Vec<u64>, PathBuf, Vec<String>)> = matched
+        .iter()
+        .filter_map(|(p, sig)| version_key(&file_name_of(p)).map(|k| (k, p.clone(), sig.clone())))
+        .collect();
+    let skipped = matched.len() - keyed.len();
+    if skipped > 0 {
+        warnings.push(format!(
+            "keep_latest: {} 个目录名无法解析出版本号，已保守跳过",
+            skipped
+        ));
+    }
+    keyed.sort_by(|a, b| a.0.cmp(&b.0)); // Vec<u64> 字典序：[2,9] < [2,9,0]，语义正确
+    let skip = keyed.len().saturating_sub(n as usize);
+    keyed
+        .into_iter()
+        .skip(skip)
+        .map(|(_, p, sig)| (p, sig))
+        .collect()
+}
+
+fn file_name_of(p: &Path) -> String {
+    p.file_name()
+        .map(|f| f.to_string_lossy().to_string())
+        .unwrap_or_default()
+}
+
+/// 从目录名提取版本号向量：定位名称中第一个「数字(.数字)+」段并逐段解析。
+/// - "app-2.9.4"        -> [2, 9, 4]
+/// - "2.5.2-1a2b3c"     -> [2, 5, 2]（hash 中的数字不参与）
+/// - "v3.10.1"          -> [3, 10, 1]
+/// - "abc" / "2-hash"   -> None（单段数字或无数字，视为不可解析）
+fn version_key(name: &str) -> Option<Vec<u64>> {
+    let b = name.as_bytes();
+    let mut i = 0;
+    while i < b.len() && !b[i].is_ascii_digit() {
+        i += 1;
+    }
+    let mut segs: Vec<u64> = Vec::new();
+    while i < b.len() && b[i].is_ascii_digit() {
+        let start = i;
+        while i < b.len() && b[i].is_ascii_digit() {
+            i += 1;
+        }
+        let mut v: u64 = 0;
+        for &d in &b[start..i] {
+            v = v.saturating_mul(10).saturating_add((d - b'0') as u64);
+        }
+        segs.push(v);
+        if i < b.len() && b[i] == b'.' && i + 1 < b.len() && b[i + 1].is_ascii_digit() {
+            i += 1;
+        } else {
+            break;
+        }
+    }
+    if segs.len() >= 2 {
+        Some(segs)
+    } else {
+        None
+    }
 }
 
 /// 检查目录内的特征文件/子目录（对齐 clean_updater_cache.py 的 dir_signature）
