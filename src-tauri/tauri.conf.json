@@ -12,9 +12,9 @@
   "app": {
     "windows": [
       {
-        "title": "cleanmaster",
-        "width": 800,
-        "height": 600
+        "title": "CleanMaster - 插件化系统清理",
+        "width": 1000,
+        "height": 760
       }
     ],
     "security": {
