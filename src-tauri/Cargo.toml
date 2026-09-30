@@ -4,6 +4,10 @@ version = "0.1.0"
 description = "Plugin-based Windows cleanup rule engine (temp files, package caches, updater caches)"
 authors = ["飞小RAN <55832499+xiaofeiTM233@users.noreply.github.com>"]
 edition = "2021"
+# 使用 resolver 1：跨 normal/build-dependency 域统一 feature。
+# 必要性见下方 indexmap 注释——resolver 2 下 schemars 所在的 build 依赖图
+# 无法从 [dependencies] 继承 indexmap 的 std feature。
+resolver = "1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -22,8 +26,12 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-regex = "1"
+regex = "1.5.5"
 sysinfo = "0.33"
+# 兼容性修复：当前 registry 的 indexmap 1.9.3 缺少 default = ["std"] 声明，
+# 导致 schemars 0.8.22（tauri-build 依赖）在无 has_std cfg 下编译失败。
+# 显式启用 std feature 后，indexmap 的 build.rs 会无条件设置 has_std。
+indexmap = { version = "1.9", features = ["std"] }
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.55"
