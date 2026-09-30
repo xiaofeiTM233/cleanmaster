@@ -13,6 +13,7 @@
 
 #![allow(dead_code)] // TODO: 命令层接通后移除
 
+pub mod loader;
 pub mod model;
 pub mod probe;
 pub mod util;
