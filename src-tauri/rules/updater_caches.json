@@ -1,0 +1,32 @@
+[
+  {
+    "schema": 1,
+    "id": "updater-caches.electron-squirrel",
+    "name": "Electron / Squirrel 更新缓存",
+    "category": "应用更新缓存",
+    "description": "扫描 AppData(Local/Roaming/LocalLow/Local\\Programs) 下匹配更新器命名模式的目录（*-updater、update、SquirrelTemp 等）。含 update.exe / Squirrel / latest.yml / *.nupkg 等特征文件的标记为「确认」，否则标记为「疑似」（可能为主程序数据，默认不勾选）。",
+    "risk": "medium",
+    "defaultEnabled": true,
+    "targets": [
+      {
+        "kind": "pattern",
+        "roots": [
+          "%USERPROFILE%\\AppData\\Local",
+          "%USERPROFILE%\\AppData\\Roaming",
+          "%USERPROFILE%\\AppData\\LocalLow",
+          "%USERPROFILE%\\AppData\\Local\\Programs"
+        ],
+        "regex": "(^|[^a-z0-9])([\\w@.\\-]*-)?updater$|update$|squirreltemp$|electron[-_]?builder$|@squirrel$",
+        "regexCaseInsensitive": true,
+        "signatureFiles": [
+          "update.exe", "squirrel.exe", "releases",
+          "latest.yml", "latest-alpha.yml", "latest-beta.yml",
+          "installer.exe", "setup.exe", ".update-lock", "squirrelsetup.exe"
+        ],
+        "signatureDirs": ["packages", "pending", "staging", "__update__"],
+        "signatureFileEndsWith": [".nupkg"],
+        "mode": "whole"
+      }
+    ]
+  }
+]

@@ -1,0 +1,260 @@
+[
+  {
+    "schema": 1,
+    "id": "pkg-caches.npm",
+    "name": "npm 缓存",
+    "category": "包管理器缓存",
+    "description": "npm 下载缓存目录（含旧版 Roaming 位置）。删除后下次 install 会重新下载。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\npm-cache", "mode": "whole" },
+      { "kind": "fixed", "path": "%USERPROFILE%\\AppData\\Roaming\\npm-cache", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "pkg-caches.pnpm",
+    "name": "pnpm 缓存",
+    "category": "包管理器缓存",
+    "description": "pnpm 内容寻址存储与缓存目录。注意：清理后已有项目需重新 install 才能离线安装。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\pnpm\\store", "mode": "whole" },
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\pnpm-cache", "mode": "whole" },
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\pnpm\\cache", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "pkg-caches.pnpm-drivestore",
+    "name": "pnpm 跨盘存储",
+    "category": "包管理器缓存",
+    "description": "扫描所有盘符根目录下的 .pnpm-store / pnpm-store 跨盘存储目录（如 E:\\.pnpm-store）。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "drive_roots", "names": [".pnpm-store", "pnpm-store"], "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "pkg-caches.yarn",
+    "name": "yarn 缓存",
+    "category": "包管理器缓存",
+    "description": "yarn 全局缓存目录。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\Yarn\\Cache", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "pkg-caches.pip",
+    "name": "pip 缓存",
+    "category": "包管理器缓存",
+    "description": "pip 下载缓存目录。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\pip\\cache", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "pkg-caches.uv",
+    "name": "uv 缓存",
+    "category": "包管理器缓存",
+    "description": "uv（Python 包管理器）缓存目录。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\uv\\cache", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "pkg-caches.electron",
+    "name": "Electron 缓存",
+    "category": "包管理器缓存",
+    "description": "electron 与 electron-builder 的二进制/构建缓存。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\electron\\Cache", "mode": "whole" },
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\electron-builder\\Cache", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "pkg-caches.cli-probe",
+    "name": "CLI 探测缓存",
+    "category": "包管理器缓存",
+    "description": "调用 npm/pnpm/pip/yarn/uv 官方命令获取真实缓存路径并校验安全性后纳入清理。未安装的工具自动跳过。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      {
+        "kind": "probe",
+        "command": "npm config get cache",
+        "safeBasenames": ["cache", "npm-cache", "pnpm-cache", "store", ".pnpm-store"],
+        "pathContainsAny": [".pnpm-store"],
+        "mode": "whole"
+      },
+      {
+        "kind": "probe",
+        "command": "pnpm store path",
+        "safeBasenames": ["cache", "npm-cache", "pnpm-cache", "store", ".pnpm-store"],
+        "pathContainsAny": [".pnpm-store"],
+        "mode": "whole"
+      },
+      {
+        "kind": "probe",
+        "command": "pip cache dir",
+        "safeBasenames": ["cache", "npm-cache", "pnpm-cache", "store", ".pnpm-store"],
+        "pathContainsAny": [".pnpm-store"],
+        "mode": "whole"
+      },
+      {
+        "kind": "probe",
+        "command": "yarn cache dir",
+        "safeBasenames": ["cache", "npm-cache", "pnpm-cache", "store", ".pnpm-store"],
+        "pathContainsAny": [".pnpm-store"],
+        "mode": "whole"
+      },
+      {
+        "kind": "probe",
+        "command": "uv cache dir",
+        "safeBasenames": ["cache", "npm-cache", "pnpm-cache", "store", ".pnpm-store"],
+        "pathContainsAny": [".pnpm-store"],
+        "mode": "whole"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.cargo",
+    "name": "cargo 缓存",
+    "category": "开发工具缓存",
+    "description": "Rust cargo registry 下载缓存与源码解包目录。删除后首次编译会重新下载依赖。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%USERPROFILE%\\.cargo\\registry\\cache", "mode": "whole" },
+      { "kind": "fixed", "path": "%USERPROFILE%\\.cargo\\registry\\src", "mode": "whole" },
+      { "kind": "fixed", "path": "%USERPROFILE%\\.cargo\\registry\\download", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.gradle",
+    "name": "gradle 缓存",
+    "category": "开发工具缓存",
+    "description": "gradle 依赖与构建缓存。删除后构建需重新下载依赖。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%USERPROFILE%\\.gradle\\caches", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.maven",
+    "name": "maven 仓库",
+    "category": "开发工具缓存",
+    "description": "maven 本地仓库 (~/.m2/repository)。删除后构建需重新下载依赖。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%USERPROFILE%\\.m2\\repository", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.nuget",
+    "name": "nuget 缓存",
+    "category": "开发工具缓存",
+    "description": "NuGet 全局包目录与 HTTP 缓存。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%USERPROFILE%\\.nuget\\packages", "mode": "whole" },
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\NuGet\\v3-cache", "mode": "whole" },
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\NuGet\\plugins-cache", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.go",
+    "name": "go 构建缓存",
+    "category": "开发工具缓存",
+    "description": "go build 缓存目录。删除后首次编译变慢。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\go-build", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.playwright",
+    "name": "playwright 浏览器",
+    "category": "开发工具缓存",
+    "description": "playwright 下载的浏览器二进制。删除后需 npx playwright install 重新安装。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\ms-playwright", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.cypress",
+    "name": "cypress 缓存",
+    "category": "开发工具缓存",
+    "description": "cypress 二进制缓存。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\Cypress\\Cache", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.puppeteer",
+    "name": "puppeteer 浏览器",
+    "category": "开发工具缓存",
+    "description": "puppeteer 下载的 Chromium 缓存。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%USERPROFILE%\\.cache\\puppeteer", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.composer",
+    "name": "composer 缓存",
+    "category": "开发工具缓存",
+    "description": "PHP composer 包文件缓存。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\Composer\\files", "mode": "whole" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.conda",
+    "name": "conda 包缓存",
+    "category": "开发工具缓存",
+    "description": "conda 下载的包缓存 (pkgs)。",
+    "risk": "medium",
+    "defaultEnabled": false,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\conda\\pkgs", "mode": "whole" }
+    ]
+  }
+]

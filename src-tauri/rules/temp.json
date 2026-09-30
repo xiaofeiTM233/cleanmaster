@@ -1,0 +1,27 @@
+[
+  {
+    "schema": 1,
+    "id": "temp.user",
+    "name": "用户临时目录",
+    "category": "临时文件",
+    "description": "清理 %LOCALAPPDATA%\\Temp 与 %TEMP% 下的临时文件（两者相同则自动去重）。仅清空目录内容、保留目录本身；被占用或无权限的文件自动跳过，不影响正在运行的程序。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "fixed", "path": "%LOCALAPPDATA%\\Temp", "mode": "contents" },
+      { "kind": "fixed", "path": "%TEMP%", "mode": "contents" }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "temp.system",
+    "name": "系统临时目录",
+    "category": "临时文件",
+    "description": "清理 %SystemRoot%\\Temp（默认 C:\\Windows\\Temp）。部分文件需要管理员权限，无权限项会自动跳过。仅清空目录内容、保留目录本身。",
+    "risk": "medium",
+    "defaultEnabled": true,
+    "targets": [
+      { "kind": "fixed", "path": "%SystemRoot%\\Temp", "mode": "contents" }
+    ]
+  }
+]
