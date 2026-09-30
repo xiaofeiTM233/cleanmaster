@@ -42,6 +42,7 @@ export default function RulesPanel({
 
   return (
     <section className="rules-panel">
+      <h2 className="rules-title">规则管理</h2>
       <header className="rules-actions">
         <div className="rules-dir" title={userRulesDir}>
           用户规则目录：{userRulesDir}

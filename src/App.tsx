@@ -4,6 +4,7 @@ import { api } from "./lib/api";
 import { fmtSize } from "./lib/format";
 import RulesPanel from "./components/RulesPanel";
 import ScanResults from "./components/ScanResults";
+import ConfirmDialog from "./components/ConfirmDialog";
 import type { CleanResult, DiscoveredItem, RulesPayload } from "./types";
 
 type Busy = null | "scan" | "clean" | "blockers" | "autoruns";
@@ -46,7 +47,7 @@ function App() {
   const [exportReport, setExportReport] = useState<string[]>([]);
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState("");
-  const [showRules, setShowRules] = useState(false);
+  const [confirmClean, setConfirmClean] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -118,11 +119,23 @@ function App() {
     }
   }
 
-  async function handleClean() {
+  /** 确认对话框中的勾选项（按当前 selected 顺序） */
+  const selectedItems = useMemo(
+    () => items.filter((i) => selected.has(i.path)),
+    [items, selected],
+  );
+
+  function requestClean() {
     if (selected.size === 0) return;
+    setError("");
+    setConfirmClean(true);
+  }
+
+  async function handleClean() {
     setBusy("clean");
     setError("");
     setOccupied({});
+    setConfirmClean(false);
     try {
       setCleanResult(await api.clean([...selected]));
       applyScan(await api.scan());
@@ -207,19 +220,12 @@ function App() {
         <div>
           <h1>CleanMaster</h1>
           <p className="subtitle">
-            插件化清理规则引擎 · 临时文件 / 包管理器缓存 / 开发工具缓存 / 应用更新缓存
+            插件化清理规则引擎 · 勾选规则后点击「扫描」，确认无误再清理
           </p>
         </div>
-        <button
-          className="btn"
-          onClick={() => setShowRules((v) => !v)}
-          aria-expanded={showRules}
-        >
-          {showRules ? "收起规则管理" : "规则管理"}
-        </button>
       </header>
 
-      {showRules && payload && (
+      {payload && (
         <RulesPanel
           rules={payload.rules}
           disabled={disabled}
@@ -237,11 +243,7 @@ function App() {
         <button className="btn btn-primary" onClick={handleScan} disabled={busy !== null}>
           {busy === "scan" ? "扫描中…" : "扫描"}
         </button>
-        <button
-          className="btn btn-danger"
-          onClick={handleClean}
-          disabled={busy !== null || selected.size === 0}
-        >
+        <button className="btn btn-danger" onClick={requestClean} disabled={busy !== null || selected.size === 0}>
           {busy === "clean" ? "清理中…" : "清理所勾选"}
         </button>
         <button
@@ -301,6 +303,15 @@ function App() {
           setSelected(next);
         }}
       />
+
+      {confirmClean && (
+        <ConfirmDialog
+          items={selectedItems}
+          busy={busy !== null}
+          onConfirm={handleClean}
+          onCancel={() => setConfirmClean(false)}
+        />
+      )}
 
       {cleanResult && (
         <section className="log-panel">

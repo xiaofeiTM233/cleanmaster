@@ -461,3 +461,103 @@ body {
   text-align: center;
   padding-top: 8px;
 }
+
+/* ---------- 规则管理标题 ---------- */
+.rules-title {
+  margin: 0;
+  font-size: 15px;
+}
+
+/* ---------- 清理确认对话框 ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 32, 48, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.modal-card {
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  width: 640px;
+  max-width: 100%;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+  gap: 10px;
+}
+
+.modal-card h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.confirm-summary {
+  margin: 0;
+  color: var(--text-dim);
+}
+
+.confirm-groups {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 0;
+}
+
+.confirm-groups > li {
+  padding: 8px 12px;
+}
+
+.confirm-groups > li + li {
+  border-top: 1px solid var(--border);
+}
+
+.confirm-rule {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.confirm-rule-name {
+  font-weight: 600;
+}
+
+.confirm-rule-meta {
+  color: var(--text-dim);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.confirm-paths {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.confirm-paths li {
+  color: var(--text-dim);
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
