@@ -11,8 +11,9 @@
 //! - `pattern`     在若干根目录下按名称正则发现目录，可用特征文件确认身份
 //! - `probe`       调用包管理器 CLI 获取真实缓存路径
 
-#![allow(dead_code)] // TODO: 命令层接通后移除
-
+pub mod checks;
+pub mod discover;
+pub mod execute;
 pub mod loader;
 pub mod model;
 pub mod probe;
