@@ -24,6 +24,10 @@ pub const BUILTIN_RULES: &[(&str, &str)] = &[
         "updater_caches.json",
         include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/rules/updater_caches.json")),
     ),
+    (
+        "app_caches.json",
+        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/rules/app_caches.json")),
+    ),
 ];
 
 pub struct LoadedRules {

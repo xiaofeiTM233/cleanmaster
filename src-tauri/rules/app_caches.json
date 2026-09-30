@@ -1,0 +1,128 @@
+[
+  {
+    "schema": 1,
+    "id": "app-caches.xwechat-update",
+    "name": "微信 4.x 更新缓存",
+    "category": "应用更新缓存",
+    "description": "清理 %APPDATA%\\Tencent\\xwechat\\update 中下载的微信更新安装包与临时文件（仅清空内容、保留目录本身，不影响聊天记录与微信主程序）。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      {
+        "kind": "fixed",
+        "path": "%APPDATA%\\Tencent\\xwechat\\update",
+        "mode": "contents"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "app-caches.xwechat-radium",
+    "name": "微信 4.x 内核渲染缓存 (radium)",
+    "category": "应用缓存",
+    "description": "清理 %APPDATA%\\Tencent\\xwechat\\radium 下 Chromium 系缓存子目录（Cache / Code Cache / GPUCache / Crashpad / logs 等），仅按精确目录名匹配，不触碰小程序与聊天数据。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      {
+        "kind": "pattern",
+        "roots": [
+          "%APPDATA%\\Tencent\\xwechat\\radium",
+          "%APPDATA%\\Tencent\\xwechat\\radium\\radium"
+        ],
+        "regex": "^(cache|code cache|gpucache|dawncache|dawngraphitecache|dawnwebgpucache|shadercache|grshadercache|crashpad|logs)$",
+        "regexCaseInsensitive": true,
+        "unconfirmedStatus": "normal",
+        "mode": "whole"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "app-caches.doubao",
+    "name": "豆包桌面版缓存",
+    "category": "应用缓存",
+    "description": "清理 %LOCALAPPDATA%\\Doubao\\User Data（含 Default 配置档）下的 Electron/Chromium 缓存子目录（Cache / Code Cache / GPUCache / ShaderCache / Crashpad / logs 等）。仅按精确目录名匹配，不删除登录状态、偏好设置与其他用户数据。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      {
+        "kind": "pattern",
+        "roots": [
+          "%LOCALAPPDATA%\\Doubao\\User Data",
+          "%LOCALAPPDATA%\\Doubao\\User Data\\Default"
+        ],
+        "regex": "^(cache|code cache|gpucache|dawncache|dawngraphitecache|dawnwebgpucache|shadercache|grshadercache|crashpad|logs)$",
+        "regexCaseInsensitive": true,
+        "unconfirmedStatus": "normal",
+        "mode": "whole"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "dev-caches.vscode-user-data",
+    "name": "VS Code 用户数据缓存",
+    "category": "开发工具缓存",
+    "description": "清理 %APPDATA%\\Code（含 User\\profiles 各配置档）下的缓存子目录：Cache / CachedData / Code Cache / GPUCache / CachedExtensionVSIXs / logs / Crashpad 等。只按精确目录名匹配，不触碰 settings.json、扩展本体与工作区数据。",
+    "risk": "low",
+    "defaultEnabled": true,
+    "targets": [
+      {
+        "kind": "pattern",
+        "roots": [
+          "%APPDATA%\\Code",
+          "%APPDATA%\\Code\\User\\profiles"
+        ],
+        "regex": "^(cache|cacheddata|code cache|gpucache|cachedextensionvsixs|dawncache|dawngraphitecache|dawnwebgpucache|shadercache|grshadercache|crashpad|logs)$",
+        "regexCaseInsensitive": true,
+        "unconfirmedStatus": "normal",
+        "mode": "whole"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "multi-version.qoder",
+    "name": "Qoder 旧版本残留",
+    "category": "应用多版本残留",
+    "description": "扫描 %LOCALAPPDATA%\\Programs\\Qoder CN\\.qoder-versions 下的多版本目录，按版本号排序仅保留最新的 1 个，删除其余旧版本。无法从目录名解析出版本号的目录会被保守跳过；正在运行的版本因文件占用会被自动跳过。",
+    "risk": "medium",
+    "defaultEnabled": true,
+    "targets": [
+      {
+        "kind": "pattern",
+        "roots": [
+          "%LOCALAPPDATA%\\Programs\\Qoder CN\\.qoder-versions"
+        ],
+        "regex": "^.+",
+        "regexCaseInsensitive": true,
+        "keepLatest": 1,
+        "unconfirmedStatus": "normal",
+        "mode": "whole"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "multi-version.githubdesktop",
+    "name": "GitHub Desktop 旧版本残留",
+    "category": "应用多版本残留",
+    "description": "扫描 %LOCALAPPDATA%\\GitHubDesktop 下的 app-x.y.z 版本目录，按版本号排序仅保留最新的 1 个，删除其余旧版本（GitHubDesktop.exe 与 Update.exe 启动器是文件，不受影响）。无法解析版本号的目录保守跳过；正在运行的版本因占用自动跳过。",
+    "risk": "medium",
+    "defaultEnabled": true,
+    "targets": [
+      {
+        "kind": "pattern",
+        "roots": [
+          "%LOCALAPPDATA%\\GitHubDesktop"
+        ],
+        "regex": "^app-",
+        "regexCaseInsensitive": true,
+        "keepLatest": 1,
+        "unconfirmedStatus": "normal",
+        "mode": "whole"
+      }
+    ]
+  }
+]
