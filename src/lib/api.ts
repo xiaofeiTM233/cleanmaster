@@ -19,4 +19,5 @@ export const api = {
   settingsSet: (settings: Settings) =>
     invoke<void>("settings_set", { settings }),
   exportBuiltinRules: () => invoke<string[]>("export_builtin_rules"),
+  openInExplorer: (path: string) => invoke<void>("open_in_explorer", { path }),
 };

@@ -270,6 +270,15 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.open-loc {
+  flex-shrink: 0;
+  color: var(--text-dim);
+}
+
+.item-row:hover .open-loc {
+  color: var(--accent);
+}
+
 /* ---------- 徽标 ---------- */
 .badge {
   display: inline-block;

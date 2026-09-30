@@ -17,6 +17,7 @@ pub fn run() {
             commands::settings_get,
             commands::settings_set,
             commands::export_builtin_rules,
+            commands::open_in_explorer,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

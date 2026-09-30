@@ -4,6 +4,10 @@
 //! 过期或伪造的路径一律拒绝，保证「用户勾选什么就只删什么」。
 
 use std::path::{Path, PathBuf};
+use std::process::Command;
+
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
 
 use tauri::Manager;
 
@@ -99,6 +103,34 @@ pub fn settings_get(app: tauri::AppHandle) -> Result<Settings, String> {
 #[tauri::command]
 pub fn settings_set(app: tauri::AppHandle, settings: Settings) -> Result<(), String> {
     loader::save_settings(&app_data_dir(&app), &settings)
+}
+
+/// 在资源管理器中打开条目所在文件夹并选中它（explorer /select）。
+/// 仅允许打开确实存在的目录；raw_arg 精确控制引号位置（路径可含空格）。
+#[tauri::command]
+pub fn open_in_explorer(path: String) -> Result<(), String> {
+    let p = PathBuf::from(&path);
+    if !p.is_dir() {
+        return Err(format!("路径不存在或不是目录: {path}"));
+    }
+    #[cfg(windows)]
+    {
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        Command::new("explorer")
+            .raw_arg(format!("/select,\"{}\"", p.display()))
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+            .map_err(|e| format!("打开资源管理器失败: {e}"))?;
+        Ok(())
+    }
+    #[cfg(not(windows))]
+    {
+        Command::new("xdg-open")
+            .arg(&p)
+            .spawn()
+            .map_err(|e| format!("打开文件管理器失败: {e}"))?;
+        Ok(())
+    }
 }
 
 /// 把内置规则导出为用户目录下的可编辑文件（已存在则跳过，不覆盖用户修改）

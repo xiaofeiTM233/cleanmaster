@@ -7,6 +7,7 @@ interface Props {
   occupied: Record<string, string[]>;
   onTogglePath: (path: string) => void;
   onToggleGroup: (items: DiscoveredItem[], checked: boolean) => void;
+  onOpenLocation: (path: string) => void;
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -41,6 +42,7 @@ export default function ScanResults({
   occupied,
   onTogglePath,
   onToggleGroup,
+  onOpenLocation,
 }: Props) {
   if (groups.length === 0) {
     return <div className="empty">点击「扫描」开始检查可清理项</div>;
@@ -112,6 +114,18 @@ export default function ScanResults({
                           )}
                         </span>
                         <span className="item-size">{fmtSize(it.size)}</span>
+                        <button
+                          className="btn btn-mini open-loc"
+                          title="在资源管理器中打开所在文件夹并定位该目录"
+                          onClick={(e) => {
+                            // item-row 是 label：阻止默认行为，避免点按钮误切换勾选框
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onOpenLocation(it.path);
+                          }}
+                        >
+                          打开位置
+                        </button>
                       </label>
                     ))}
                   </div>

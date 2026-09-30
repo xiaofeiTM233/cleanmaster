@@ -294,6 +294,9 @@ function App() {
           else next.add(path);
           setSelected(next);
         }}
+        onOpenLocation={(path) => {
+          api.openInExplorer(path).catch((e) => setError(String(e)));
+        }}
         onToggleGroup={(groupItems, checked) => {
           const next = new Set(selected);
           for (const it of groupItems) {
